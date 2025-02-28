@@ -1,22 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>German Sentence Drag and Drop Game</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deutsch Drag & Drop Spiel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
     <div class="game-container">
-      <div id="sentence" class="sentence"></div>
-      <div id="draggable-words" class="draggable-words"></div>
-      <div class="scoreboard">
-        <p>Lives: <span id="lives">10</span></p>
-        <p>Score: <span id="score">0</span></p>
-      </div>
-      <div id="dropZoneContainer" class="drop-zone-container"></div>
+        <h1>🇩🇪 Drag & Drop: Bilde den richtigen Satz!</h1>
+        <p>Ziehe die Wörter an die richtige Stelle, um den Satz zu vervollständigen.</p>
+        <div id="score-lives">
+            <p>Punkte: <span id="score">0</span> | Leben: <span id="lives">10</span></p>
+        </div>
+
+        <!-- Sentence Answer Zone -->
+        <div id="answer-zone" class="drop-area"></div>
+
+        <!-- Word Bank -->
+        <div id="word-bank" class="word-bank"></div>
+
+        <button onclick="resetGame()">Spiel zurücksetzen</button>
     </div>
 
     <script src="script.js"></script>
-  </body>
+</body>
 </html>

@@ -1,63 +1,72 @@
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    padding: 20px;
 }
 
 .game-container {
-  text-align: center;
-  width: 80%;
-  max-width: 800px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin: auto;
 }
 
-.sentence {
-  font-size: 24px;
-  margin-bottom: 20px;
+h1 {
+    color: #d32f2f;
 }
 
-.word {
-  display: inline-block;
-  margin: 10px;
-  padding: 10px;
-  background-color: #76c7c0;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
+p {
+    font-size: 18px;
 }
 
-.drop-zone {
-  display: inline-block;
-  width: 150px;
-  height: 50px;
-  margin: 10px;
-  border: 2px dashed #76c7c0;
-  background-color: #f4f4f4;
-  line-height: 50px;
-  font-size: 24px;
-  color: #76c7c0;
+#score-lives {
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
-.scoreboard {
-  margin-top: 20px;
+/* Word Bank */
+.word-bank {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
 }
 
-span {
-  font-size: 24px;
-  font-weight: bold;
+.draggable-word {
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: grab;
+    font-size: 16px;
 }
 
-#dropZoneContainer {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
+.draggable-word:active {
+    cursor: grabbing;
 }
 
-#draggable-words {
-  margin-top: 20px;
+/* Answer Boxes */
+.drop-area {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px auto;
+    min-height: 50px;
+}
+
+.answer-box {
+    width: 100px;
+    height: 40px;
+    border: 2px dashed #333;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: #fff;
+    border-radius: 5px;
 }
