@@ -1,162 +1,138 @@
-// List of sentences for the game
+let lives = 10;
+let score = 0;
+
+// German complete sentences where the words will be dragged to the right spots
 const sentences = [
-    "Ich habe einen Hund.", 
-    "Der Himmel ist blau.", 
-    "Wir gehen ins Kino.", 
-    "Das Essen schmeckt gut.",
-    "Sie spielt gerne Fußball."
+  { sentence: "Wir können heute Deutsch sprechen.", words: ["Wir", "können", "heute", "Deutsch", "sprechen"] },
+  { sentence: "Ich möchte ins Kino gehen.", words: ["Ich", "möchte", "ins", "Kino", "gehen"] },
+  { sentence: "Sie müssen morgen arbeiten.", words: ["Sie", "müssen", "morgen", "arbeiten"] },
+  { sentence: "Er soll das Buch lesen.", words: ["Er", "soll", "das", "Buch", "lesen"] },
+  { sentence: "Du darfst nicht spät kommen.", words: ["Du", "darfst", "nicht", "spät", "kommen"] },
+  { sentence: "Wir wollen in den Park gehen.", words: ["Wir", "wollen", "in", "den", "Park", "gehen"] },
+  { sentence: "Ich kann gut schwimmen.", words: ["Ich", "kann", "gut", "schwimmen"] },
+  { sentence: "Sie will ein neues Auto kaufen.", words: ["Sie", "will", "ein", "neues", "Auto", "kaufen"] },
+  { sentence: "Du sollst leise sein.", words: ["Du", "sollst", "leise", "sein"] },
+  { sentence: "Er darf keinen Zucker essen.", words: ["Er", "darf", "keinen", "Zucker", "essen"] }
 ];
 
-let currentSentence = "";
-let words = [];
-let score = 0;
-let lives = 10;
-let completedSentences = 0;
+let currentSentence = getRandomSentence();
+let shuffledWords = shuffle(currentSentence.words);
 
-// Select elements
-const sentenceTarget = document.getElementById("sentence-target");
-const wordBank = document.getElementById("word-bank");
-const dropZone = document.getElementById("drop-zone");
-const scoreDisplay = document.getElementById("score");
-const livesDisplay = document.getElementById("lives");
-const messageDisplay = document.getElementById("message");
+// Render the sentence and draggable words
+document.getElementById('sentence').innerHTML = currentSentence.sentence;
+document.getElementById('draggable-words').innerHTML = shuffledWords.map(word => 
+  `<div class="word" id="${word}" draggable="true">${word}</div>`).join(' ');
 
-// Initialize Game
-function startGame() {
-    if (completedSentences >= 15) {
-        messageDisplay.textContent = "🎉 You won the game!";
-        return;
-    }
+// Render the drop zones
+const dropZoneContainer = document.getElementById('dropZoneContainer');
+dropZoneContainer.innerHTML = currentSentence.words.map((word, index) => 
+  `<div class="drop-zone" id="drop-zone-${index}" data-correct="${word}"></div>`).join(' ');
 
-    dropZone.innerHTML = "";
-    wordBank.innerHTML = "";
-    messageDisplay.textContent = "";
+const dropZones = document.querySelectorAll(".drop-zone");
 
-    // Pick a random sentence
-    currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
-    words = currentSentence.split(" ").sort(() => Math.random() - 0.5);
+document.addEventListener("DOMContentLoaded", () => {
+  const draggableWords = document.querySelectorAll(".word");
+  draggableWords.forEach(word => {
+    word.addEventListener("dragstart", handleDragStart);
+  });
 
-    // Display target sentence (with underscores)
-    sentenceTarget.textContent = "_ ".repeat(words.length).trim();
+  dropZones.forEach(dropZone => {
+    dropZone.addEventListener("dragover", handleDragOver);
+    dropZone.addEventListener("drop", handleDrop);
+  });
+});
 
-    // Create draggable words
-    words.forEach(word => {
-        let wordEl = document.createElement("div");
-        wordEl.textContent = word;
-        wordEl.classList.add("word");
-        wordEl.setAttribute("draggable", true);
-        wordEl.addEventListener("dragstart", dragStart);
-        wordBank.appendChild(wordEl);
-    });
-
-    // Create drop slots
-    words.forEach((_, index) => {
-        let slot = document.createElement("div");
-        slot.classList.add("word");
-        slot.dataset.index = index;
-        slot.addEventListener("dragover", dragOver);
-        slot.addEventListener("drop", drop);
-        dropZone.appendChild(slot);
-    });
+function handleDragStart(event) {
+  event.dataTransfer.setData("text", event.target.id);
 }
 
-// Drag & Drop Functions
-function dragStart(event) {
-    event.dataTransfer.setData("text", event.target.textContent);
+function handleDragOver(event) {
+  event.preventDefault();
 }
 
-function dragOver(event) {
-    event.preventDefault();
-}
+function handleDrop(event) {
+  event.preventDefault();
+  const wordId = event.dataTransfer.getData("text");
+  const wordElement = document.getElementById(wordId);
+  const targetZone = event.target;
 
-function drop(event) {
-    event.preventDefault();
-    let droppedWord = event.dataTransfer.getData("text");
-    let correctWord = currentSentence.split(" ")[event.target.dataset.index];
+  if (targetZone.classList.contains("drop-zone") && !targetZone.hasChildNodes()) {
+    targetZone.appendChild(wordElement);
 
-    if (droppedWord === correctWord) {
-        event.target.textContent = droppedWord;
-        event.target.classList.add("correct");
-        checkCompletion();
+    // Check if word is placed correctly
+    if (targetZone.dataset.correct === wordId) {
+      score += 10;
+      playCorrectSound();
     } else {
-        lives--;
-        livesDisplay.textContent = lives;
-        if (lives <= 0) {
-            messageDisplay.textContent = "❌ Game Over!";
-            return;
-        }
+      lives -= 1;
+      playIncorrectSound();
+      resetWordPosition(wordElement);
     }
+
+    updateScore();
+    updateLives();
+
+    checkGameOver();
+  }
 }
 
-// Check if sentence is completed
-function checkCompletion() {
-    let completed = [...dropZone.children].every((slot, i) => slot.textContent === currentSentence.split(" ")[i]);
-
-    if (completed) {
-        score += 10;
-        completedSentences++;
-        scoreDisplay.textContent = score;
-        messageDisplay.textContent = "✅ Correct! Next sentence...";
-        setTimeout(startGame, 1500);
-    }
+function updateScore() {
+  document.getElementById("score").textContent = score;
 }
 
-// Start game on load
-startGame();
-let isTouchDevice = 'ontouchstart' in document.documentElement; // Check for touch devices
-
-// Define events for both mouse and touch
-let startEvent = isTouchDevice ? 'touchstart' : 'mousedown';
-let moveEvent = isTouchDevice ? 'touchmove' : 'mousemove';
-let endEvent = isTouchDevice ? 'touchend' : 'mouseup';
-
-// Example: Add event listeners for drag
-function initDragAndDrop() {
-  const draggableElements = document.querySelectorAll('.word');
-  const dropZones = document.querySelectorAll('.drop-zone');
-
-  draggableElements.forEach(el => {
-    el.addEventListener(startEvent, handleDragStart);
-    el.addEventListener(moveEvent, handleDragMove);
-    el.addEventListener(endEvent, handleDragEnd);
-  });
+function updateLives() {
+  document.getElementById("lives").textContent = lives;
 }
 
-// Variables for tracking drag position
-let draggedElement = null;
-let offsetX, offsetY;
-
-function handleDragStart(e) {
-  draggedElement = this;
-  const event = e.type === 'touchstart' ? e.touches[0] : e;
-  offsetX = event.clientX - draggedElement.getBoundingClientRect().left;
-  offsetY = event.clientY - draggedElement.getBoundingClientRect().top;
+function playCorrectSound() {
+  const audio = new Audio("correct-sound.mp3");
+  audio.play();
 }
 
-function handleDragMove(e) {
-  if (!draggedElement) return;
-  const event = e.type === 'touchmove' ? e.touches[0] : e;
-  draggedElement.style.position = 'absolute';
-  draggedElement.style.left = `${event.clientX - offsetX}px`;
-  draggedElement.style.top = `${event.clientY - offsetY}px`;
+function playIncorrectSound() {
+  const audio = new Audio("incorrect-sound.mp3");
+  audio.play();
 }
 
-function handleDragEnd(e) {
-  if (!draggedElement) return;
-  const event = e.type === 'touchend' ? e.changedTouches[0] : e;
-
-  const dropZones = document.querySelectorAll('.drop-zone');
-  dropZones.forEach(zone => {
-    const rect = zone.getBoundingClientRect();
-    if (event.clientX >= rect.left && event.clientX <= rect.right &&
-        event.clientY >= rect.top && event.clientY <= rect.bottom) {
-      zone.appendChild(draggedElement);
-      draggedElement.style.position = 'static'; // Reset the position
-    }
-  });
-
-  draggedElement = null; // Reset the dragged element after drop
+function resetWordPosition(wordElement) {
+  const originalWord = document.getElementById(wordElement.id);
+  originalWord.style.display = "inline-block";
 }
 
-// Initialize drag-and-drop functionality
-initDragAndDrop();
+function checkGameOver() {
+  if (lives <= 0) {
+    alert("Game Over! You lost!");
+    resetGame();
+  } else if (score === currentSentence.words.length * 10) {
+    alert("Congratulations! You completed the sentence!");
+    resetGame();
+  }
+}
+
+function resetGame() {
+  lives = 10;
+  score = 0;
+  updateLives();
+  updateScore();
+  currentSentence = getRandomSentence();
+  shuffledWords = shuffle(currentSentence.words);
+  document.getElementById('sentence').innerHTML = currentSentence.sentence;
+  document.getElementById('draggable-words').innerHTML = shuffledWords.map(word => 
+    `<div class="word" id="${word}" draggable="true">${word}</div>`).join(' ');
+
+  dropZoneContainer.innerHTML = currentSentence.words.map((word, index) => 
+    `<div class="drop-zone" id="drop-zone-${index}" data-correct="${word}"></div>`).join(' ');
+}
+
+function getRandomSentence() {
+  return sentences[Math.floor(Math.random() * sentences.length)];
+}
+
+function shuffle(array) {
+  let shuffled = array.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}

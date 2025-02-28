@@ -1,44 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drag and Drop Sentence Builder</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>German Sentence Drag and Drop Game</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="game-container">
-        <h1>Build the German Sentence</h1>
-        <p id="sentence-target"></p>
-        
-        <div id="word-bank" class="word-bank"></div>
-        
-        <div id="drop-zone" class="drop-zone"></div>
-        
-        <p>Score: <span id="score">0</span> | Lives: <span id="lives">10</span></p>
-        <p id="message"></p>
+      <div id="sentence" class="sentence"></div>
+      <div id="draggable-words" class="draggable-words"></div>
+      <div class="scoreboard">
+        <p>Lives: <span id="lives">10</span></p>
+        <p>Score: <span id="score">0</span></p>
+      </div>
+      <div id="dropZoneContainer" class="drop-zone-container"></div>
     </div>
 
     <script src="script.js"></script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Drag and Drop Game</title>
-  <link rel="stylesheet" href="styles.css"> <!-- Link to the CSS file -->
-</head>
-<body>
-  <div class="container">
-    <div class="word" draggable="true" id="word1">Hello</div>
-    <div class="word" draggable="true" id="word2">World</div>
-    <div class="drop-zone" id="zone1"></div>
-    <div class="drop-zone" id="zone2"></div>
-  </div>
-
-  <script src="script.js"></script> <!-- Link to the JavaScript file -->
-</body>
+  </body>
 </html>
