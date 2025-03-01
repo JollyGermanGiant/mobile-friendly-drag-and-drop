@@ -10,23 +10,14 @@ function shuffleArray(array) {
 let sentences = [
     { full: "Wir können heute Deutsch sprechen.", words: ["Wir", "können", "heute", "Deutsch", "sprechen."] },
     { full: "Du sollst dein Zimmer aufräumen.", words: ["Du", "sollst", "dein", "Zimmer", "aufräumen."] },
-    { full: "Er muss jeden Tag früh aufstehen.", words: ["Er", "muss", "jeden", "Tag", "früh", "aufstehen."] },
-    { full: "Ich will in Deutschland arbeiten.", words: ["Ich", "will", "in", "Deutschland", "arbeiten."] },
-    { full: "Sie dürfen hier nicht rauchen.", words: ["Sie", "dürfen", "hier", "nicht", "rauchen."] },
-    { full: "Wir möchten eine Pizza essen.", words: ["Wir", "möchten", "eine", "Pizza", "essen."] },
-    { full: "Ihr könnt sehr gut tanzen.", words: ["Ihr", "könnt", "sehr", "gut", "tanzen."] },
-    { full: "Kannst du mir helfen?", words: ["Kannst", "du", "mir", "helfen?"] },
-    { full: "Sie muss heute lange arbeiten.", words: ["Sie", "muss", "heute", "lange", "arbeiten."] },
-    { full: "Ich darf nach der Schule fernsehen.", words: ["Ich", "darf", "nach", "der", "Schule", "fernsehen."] }
+    { full: "Er muss jeden Tag früh aufstehen.", words: ["Er", "muss", "jeden", "Tag", "früh", "aufstehen."] }
 ];
 
-// Game variables
 let score = 0;
 let lives = 10;
 let currentSentenceIndex = 0;
-let wordPositions = {}; // Store original word positions
 
-// Load sentence and generate draggable words
+// Load the next sentence
 function loadNextSentence() {
     if (currentSentenceIndex < sentences.length) {
         let sentenceObj = sentences[currentSentenceIndex];
@@ -38,53 +29,45 @@ function loadNextSentence() {
     }
 }
 
-// Function to display sentence words as draggable elements
 function displaySentence(sentenceObj) {
     let wordBank = document.getElementById("word-bank");
     let answerZone = document.getElementById("answer-zone");
     
-    wordBank.innerHTML = "";  // Clear previous words
-    answerZone.innerHTML = ""; // Clear previous answer boxes
-    wordPositions = {}; // Reset stored word positions
+    wordBank.innerHTML = "";
+    answerZone.innerHTML = "";
 
     let words = [...sentenceObj.words];
-
-    // Shuffle words in word bank, but keep answer boxes in original order
     let shuffledWords = [...words];
     shuffleArray(shuffledWords);
 
     shuffledWords.forEach((word, index) => {
-        // Create draggable word element
         let wordElement = document.createElement("div");
         wordElement.classList.add("draggable-word");
         wordElement.textContent = word;
         wordElement.setAttribute("draggable", "true");
-        wordElement.dataset.index = words.indexOf(word); // Store correct order position
-        wordElement.id = "word-" + words.indexOf(word);
-
-        // Store initial positions
-        wordPositions[wordElement.id] = { parent: wordBank, element: wordElement };
+        wordElement.dataset.index = words.indexOf(word);
 
         wordElement.addEventListener("dragstart", dragStart);
-        wordElement.addEventListener("dragend", dragEnd);
+        wordElement.addEventListener("touchstart", touchStart);
+        wordElement.addEventListener("touchmove", touchMove);
+        wordElement.addEventListener("touchend", touchEnd);
+
         wordBank.appendChild(wordElement);
     });
 
-    // Create answer boxes in the original order
     words.forEach((_, index) => {
         let answerBox = document.createElement("div");
         answerBox.classList.add("answer-box");
-        answerBox.dataset.index = index; // Correct position for this answer box
+        answerBox.dataset.index = index;
         answerBox.addEventListener("dragover", dragOver);
         answerBox.addEventListener("drop", dropWord);
-
         answerZone.appendChild(answerBox);
     });
 }
 
-// Drag-and-drop event functions
+// Drag and drop functions
 function dragStart(event) {
-    event.dataTransfer.setData("text", event.target.id);
+    event.dataTransfer.setData("text", event.target.dataset.index);
 }
 
 function dragOver(event) {
@@ -93,49 +76,42 @@ function dragOver(event) {
 
 function dropWord(event) {
     event.preventDefault();
-    let draggedWordId = event.dataTransfer.getData("text");
-    let draggedWordElement = document.getElementById(draggedWordId);
-    let draggedWordIndex = draggedWordElement.dataset.index;
+    let draggedIndex = event.dataTransfer.getData("text");
     let correctIndex = event.target.dataset.index;
 
-    if (draggedWordIndex === correctIndex && event.target.textContent === "") {
-        event.target.textContent = draggedWordElement.textContent;
-        draggedWordElement.remove(); // Remove word from word bank on correct placement
+    let draggedWord = document.querySelector(`[data-index='${draggedIndex}']`);
+
+    if (draggedIndex === correctIndex) {
+        event.target.textContent = draggedWord.textContent;
+        draggedWord.remove();
         score += 10;
         document.getElementById("score").textContent = score;
-
         checkSentenceCompletion();
     } else {
-        alert("❌ Falsche Position! Das Wort wird zurückgesetzt.");
-        returnWordToBank(draggedWordElement);
         lives--;
         document.getElementById("lives").textContent = lives;
-
         if (lives <= 0) {
-            alert("❌ Alle Leben verloren! Das Spiel wird neu gestartet.");
+            alert("❌ Alle Leben verloren! Spiel startet neu.");
             resetGame();
         }
     }
 }
 
-// Reset words back to original location if dropped incorrectly
-function returnWordToBank(wordElement) {
-    let originalParent = wordPositions[wordElement.id].parent;
-    originalParent.appendChild(wordElement);
+// Mobile touch support
+function touchStart(event) {
+    event.target.style.opacity = "0.5";
 }
 
-// When dragging ends, check if it was dropped incorrectly and return if needed
-function dragEnd(event) {
-    let wordElement = event.target;
-    if (!document.body.contains(wordElement)) return; // If word is already placed, ignore
-    returnWordToBank(wordElement);
+function touchMove(event) {
+    event.preventDefault();
 }
 
-// Check if the sentence is fully completed
+function touchEnd(event) {
+    event.target.style.opacity = "1";
+}
+
 function checkSentenceCompletion() {
-    let answerBoxes = document.querySelectorAll(".answer-box");
-    let allFilled = Array.from(answerBoxes).every(box => box.textContent !== "");
-    
+    let allFilled = [...document.querySelectorAll(".answer-box")].every(box => box.textContent !== "");
     if (allFilled) {
         setTimeout(() => {
             alert("✅ Satz vervollständigt! Gut gemacht!");
@@ -144,19 +120,15 @@ function checkSentenceCompletion() {
     }
 }
 
-// Reset the game
 function resetGame() {
     score = 0;
     lives = 10;
     currentSentenceIndex = 0;
-    shuffleArray(sentences);
     document.getElementById("score").textContent = score;
     document.getElementById("lives").textContent = lives;
     loadNextSentence();
 }
 
-// Start the game
 document.addEventListener("DOMContentLoaded", () => {
-    shuffleArray(sentences);
     loadNextSentence();
 });

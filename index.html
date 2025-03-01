@@ -1,43 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>rewritten simple drag and drop</title>
-  <link rel="stylesheet" href="./style.css">
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deutsch Drag & Drop Spiel</title>
+    <title>Deutsches Drag & Drop Spiel</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>🇩🇪 Drag & Drop: Bilde den richtigen Satz!</h1>
-        <p>Ziehe die Wörter an die richtige Stelle, um den Satz zu vervollständigen.</p>
-        <div id="score-lives">
-            <p>Punkte: <span id="score">0</span> | Leben: <span id="lives">10</span></p>
+    <div id="game-container">
+        <h1>Drag & Drop - Bilde den Satz!</h1>
+        <div id="scoreboard">
+            <div>❤️ Leben: <span id="lives">10</span></div>
+            <div>⭐ Punkte: <span id="score">0</span></div>
         </div>
-
-        <!-- Sentence Answer Zone -->
-        <div id="answer-zone" class="drop-area"></div>
-
-        <!-- Word Bank -->
-        <div id="word-bank" class="word-bank"></div>
-
-        <button onclick="resetGame()">Spiel zurücksetzen</button>
+        <div id="word-bank"></div>
+        <div id="answer-zone"></div>
     </div>
-
     <script src="script.js"></script>
-</body>
-</html>
-<!-- partial -->
-  <script  src="./script.js"></script>
-
 </body>
 </html>

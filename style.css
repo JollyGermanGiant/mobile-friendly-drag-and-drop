@@ -2,71 +2,97 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f4f4f4;
-    padding: 20px;
-}
-
-.game-container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    max-width: 600px;
-    margin: auto;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
-    color: #d32f2f;
+    color: #333;
 }
 
-p {
+#game-container {
+    width: 90%;
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#scoreboard {
+    display: flex;
+    justify-content: space-between;
     font-size: 18px;
+    margin-bottom: 15px;
 }
 
-#score-lives {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-/* Word Bank */
-.word-bank {
+#word-bank {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
-    margin-top: 20px;
+    padding: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    min-height: 60px;
 }
 
 .draggable-word {
+    padding: 10px 15px;
     background: #007bff;
     color: white;
-    padding: 10px;
     border-radius: 5px;
     cursor: grab;
-    font-size: 16px;
+    user-select: none;
+    transition: transform 0.2s;
 }
 
 .draggable-word:active {
     cursor: grabbing;
+    transform: scale(1.1);
 }
 
-/* Answer Boxes */
-.drop-area {
+#answer-zone {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
-    margin: 20px auto;
-    min-height: 50px;
+    padding: 10px;
+    margin-top: 20px;
+    background: #eee;
+    border-radius: 5px;
+    min-height: 80px;
 }
 
 .answer-box {
-    width: 100px;
+    width: 80px;
     height: 40px;
-    border: 2px dashed #333;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    background: #fff;
+    background: white;
+    border: 2px dashed #aaa;
     border-radius: 5px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.answer-box.filled {
+    background: #4caf50;
+    color: white;
+    border: 2px solid #4caf50;
+    transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+    .draggable-word {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+    .answer-box {
+        width: 70px;
+        height: 35px;
+        font-size: 14px;
+    }
 }
